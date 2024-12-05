@@ -1,59 +1,51 @@
 <?php
 
 use App\Models\Course;
-use Illuminate\Support\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
+
 use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
 
-it('shows courses overview', function() {
+it('shows courses overview', function () {
     // Arrange
-    Course::factory()->create(['title' => 'Course A', 'description' => 'Description A',
-        'released_at' => Carbon::now() ]);
-    Course::factory()->create(['title' => 'Course B', 'description' => 'Description B',
-        'released_at' => Carbon::now() ]);
-    Course::factory()->create(['title' => 'Course C', 'description' => 'Description C',
-        'released_at' => Carbon::now() ]);
+    $firstCourse = Course::factory()->released()->create();
+    $secondCourse = Course::factory()->released()->create();
+    $thirdCourse = Course::factory()->released()->create();
 
     // Act  // Assert
     get(route('home'))
-    ->assertSeeText([
-        'Course A',
-        'Description A',
-        'Course B',
-        'Description B',
-        'Course C',
-        'Description C',
-    ]);
+        ->assertSeeText([
+            $firstCourse->title,
+            $firstCourse->description,
+            $secondCourse->title,
+            $secondCourse->description,
+            $thirdCourse->title,
+            $thirdCourse->description,
+        ]);
 });
 
 it('shows only released courses', function () {
     // Arrange
-    Course::factory()->create(['title' => 'Course A', 'released_at' => Carbon::yesterday()]);
-    Course::factory()->create(['title' => 'Course B']);
+    $releasedCourse = Course::factory()->released()->create();
+    $notReleasedCourse = Course::factory()->create();
 
     // Act  // Assert
     get(route('home'))
-    ->assertSeeText([
-        'Course A',
-    ])
-    ->assertDontSeeText([
-        'Course B',
-    ]);
+        ->assertSeeText($releasedCourse->title)
+        ->assertDontSeeText($notReleasedCourse->title);
 });
 
 it('shows courses by release date', function () {
     // Arrange
-    Course::factory()->create(['title' => 'Course A', 'released_at' => Carbon::yesterday()]);
-    Course::factory()->create(['title' => 'Course B', 'released_at' => Carbon::now()]);
+    $releasedCourse = Course::factory()->released(Carbon::yesterday())->create();
+    $newerReleasedCourse = Course::factory()->released()->create();
 
-    // Act
+    // Act // Assert
     get(route('home'))
         ->assertSeeInOrder([
-            'Course B',
-            'Course A',
+            $newerReleasedCourse->title,
+            $releasedCourse->title,
         ]);
-
-    // Assert
 });

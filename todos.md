@@ -11,4 +11,4 @@
 * Ver un curso comprado (página)
 
 ## Los administradores pueden
-* Tweet sobre un curso (se accede desde los detalles del curso)
+* Tweet sobre un curso nuevo

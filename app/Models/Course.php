@@ -2,11 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Testing\Fluent\Concerns\Has;
 
 class Course extends Model
 {
     use HasFactory;
+
+    protected $casts = [
+        'learnings' => 'array',
+    ];
+
+    public function scopeReleased(Builder $query)
+    {
+        return $query->whereNotNull('released_at');
+    }
 }

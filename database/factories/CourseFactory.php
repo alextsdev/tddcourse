@@ -8,13 +8,21 @@ use Illuminate\Support\Carbon;
 
 class CourseFactory extends Factory
 {
-  protected $model = Course::class;
+    protected $model = Course::class;
 
-  public function definition(): array
-  {
-    return [
-        'title' => $this->faker->sentence,
-        'description' => $this->faker->paragraph,
-    ];
-  }
+    public function definition(): array
+    {
+        return [
+            'title' => $this->faker->sentence,
+            'slug' => $this->faker->slug,
+            'description' => $this->faker->paragraph,
+        ];
+    }
+
+    public function released(?Carbon $date = null): self
+    {
+        return $this->state(
+            fn (array $attributes) => ['released_at' => $date ?? Carbon::now()]
+        );
+    }
 }
