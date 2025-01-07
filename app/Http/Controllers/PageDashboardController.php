@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-class PageDashboardController
+
+class PageDashboardController extends Controller
 {
     public function __invoke()
     {
@@ -9,5 +10,4 @@ class PageDashboardController
 
         return view('dashboard', compact('purchasedCourses'));
     }
-
 }

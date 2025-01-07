@@ -1,9 +1,11 @@
+
 <?php
 
 use App\Models\Course;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Support\Carbon;
+
 use function Pest\Laravel\get;
 
 it('cannot be accessed by guest', function () {
@@ -12,14 +14,14 @@ it('cannot be accessed by guest', function () {
         ->assertRedirect(route('login'));
 });
 
-it('lists purchases courses', function () {
+it('lists purchased courses', function () {
     // Arrange
     $user = User::factory()
-        ->has(Course::factory()->count(2)->state (
+        ->has(Course::factory()->count(2)->state(
             new Sequence(
                 ['title' => 'Course A'],
                 ['title' => 'Course B'],
-        )))
+            )))
         ->create();
 
     // Act & Assert
@@ -41,24 +43,24 @@ it('does not list other courses', function () {
     get(route('pages.dashboard'))
         ->assertOk()
         ->assertDontSeeText($course->title);
+
 });
 
-it('shows latest  purchased courses first', function () {
+it('shows latest purchased course first', function () {
     // Arrange
-    $user = User::factory()->create();
-    $firstPurchaseCourse = Course::factory()->create();
-    $secondPurchaseCourse = Course::factory()->create();
+    $user = loginAsUser();
+    $firstPurchasedCourse = Course::factory()->create();
+    $secondPurchasedCourse = Course::factory()->create();
 
-    $user->courses()->attach($firstPurchaseCourse, ['created_at' => Carbon::yesterday()]);
-    $user->courses()->attach($secondPurchaseCourse, ['created_at' => Carbon::now()]);
+    $user->courses()->attach($firstPurchasedCourse, ['created_at' => Carbon::yesterday()]);
+    $user->courses()->attach($secondPurchasedCourse, ['created_at' => Carbon::now()]);
 
     // Act & Assert
-    loginAsUser($user);
     get(route('pages.dashboard'))
         ->assertOk()
         ->assertSeeTextInOrder([
-            $secondPurchaseCourse->title,
-            $firstPurchaseCourse->title,
+            $secondPurchasedCourse->title,
+            $firstPurchasedCourse->title,
         ]);
 });
 
@@ -74,4 +76,13 @@ it('includes link to product videos', function () {
         ->assertOk()
         ->assertSeeText('Watch videos')
         ->assertSee(route('pages.course-videos', Course::first()));
+});
+
+it('includes logout', function () {
+    // Act & Assert
+    loginAsUser();
+    get(route('pages.dashboard'))
+        ->assertOk()
+        ->assertSeeText('Log Out')
+        ->assertSee(route('logout'));
 });

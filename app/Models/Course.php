@@ -15,12 +15,12 @@ class Course extends Model
         'learnings' => 'array',
     ];
 
-    public function videos() :HasMany
+    public function videos(): HasMany
     {
         return $this->hasMany(Video::class);
     }
 
-    public function scopeReleased(Builder $query)
+    public function scopeReleased(Builder $query): Builder
     {
         return $query->whereNotNull('released_at');
     }

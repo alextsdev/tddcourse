@@ -10,7 +10,7 @@ it('has courses', function () {
         ->create();
 
     // Act & Assert
-    expect($courses = $user->courses)
+    expect($user->courses)
         ->toHaveCount(2)
-        ->toBeInstanceOf(Course::class);
+        ->each->toBeInstanceOf(Course::class);
 });
